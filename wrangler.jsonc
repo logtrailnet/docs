@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "logtrail-docs",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-02-14",
+  "build": {
+    "command": "npm run build"
+  },
+  "vars": {
+    "NODE_VERSION": "24.13.1"
+  }
+}

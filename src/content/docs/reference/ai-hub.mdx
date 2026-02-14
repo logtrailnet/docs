@@ -1,0 +1,55 @@
+---
+title: AI & Agent Hub
+description: Resources for integrating Logtrail with LLMs and AI Agents.
+---
+
+import { Card, CardGrid, LinkButton, Icon } from '@astrojs/starlight/components';
+
+This page provides machine-readable resources and quick-access tools to help you integrate Logtrail using AI agents, "vibe coding" tools, and Large Language Models.
+
+## Machine-Readable Resources
+
+These files are designed to be consumed by AI tools like Cursor, Windsurf, and custom GPTs.
+
+<CardGrid>
+  <Card title="llms.txt" icon="document">
+    A high-level technical roadmap of the Logtrail API surface.
+    <br />
+    <LinkButton href="/llms.txt" variant="minimal">View Raw</LinkButton>
+  </Card>
+  <Card title="AGENT.md" icon="rocket">
+    Specific technical instructions for LLM ingestion and LCQL querying.
+    <br />
+    <LinkButton href="/AGENT.md" variant="minimal">View Raw</LinkButton>
+  </Card>
+  <Card title="claude.md" icon="sun">
+    Optimized for Claude (Anthropic) with XML-structured context.
+    <br />
+    <LinkButton href="/claude.md" variant="minimal">View Raw</LinkButton>
+  </Card>
+</CardGrid>
+
+## Chat with Documentation
+
+Click below to start a new chat session with your favorite AI model. **Pro Tip:** Copy the content of `llms.txt` and paste it into the chat to provide the model with full context.
+
+<CardGrid>
+  <LinkButton href="https://chatgpt.com" icon="external" target="_blank">
+    Open ChatGPT
+  </LinkButton>
+  <LinkButton href="https://claude.ai" icon="external" target="_blank">
+    Open Claude
+  </LinkButton>
+  <LinkButton href="https://gemini.google.com" icon="external" target="_blank">
+    Open Gemini
+  </LinkButton>
+</CardGrid>
+
+## Automatic Tool Integration
+
+If you are using an AI-powered IDE like **Cursor** or **Windsurf**, simply point it to this site. These tools will automatically look for the `/llms.txt` file at the root to understand how to help you write code for Logtrail.
+
+```bash
+# Example for tools that accept a documentation URL
+https://docs.logtrail.net/llms.txt
+```

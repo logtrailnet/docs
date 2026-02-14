@@ -1,0 +1,375 @@
+openapi: 3.1.0
+info:
+  title: Logtrail API
+  description: |
+    Public API for ingesting and querying logs in Logtrail.
+
+    ### Authentication & Scoping
+    Logtrail uses API Keys for workspace-level access. Keys are formatted as `lt_{env}_{type}_{random_string}`.
+
+    #### Environment Scoping
+    Each API key is scoped to a specific environment. Requests made with a key will only interact with data in that environment.
+    *   `test`: Development environment (Dev)
+    *   `pre`: Staging environment (Staging)
+    *   `live`: Production environment (Prod)
+
+    #### Permissions (Scopes)
+    API keys are assigned specific permissions that determine which actions they can perform:
+    *   `logs:read`: Allows querying and retrieving log data. (Prefix: `ro`)
+    *   `logs:write`: Allows ingesting new log entries. (Prefix: `wo`)
+    *   `rw`: Grants both `logs:read` and `logs:write` permissions.
+
+    Keys can also be assigned `*` which grants all current and future permissions.
+
+    ### Custom Query Language (LCQL)
+    The `/logs/query` endpoint supports the **Logtrail Custom Query Language (LCQL)**, which provides advanced filtering capabilities beyond simple parameters.
+
+    **Sorting:**
+    By default, all queries return logs sorted by **Server Timestamp in descending order** (`server_timestamp DESC`), then by **ID in descending order** (`id DESC`).
+
+    **Operators:**
+    *   `=`: Exact match (Case-sensitive for JSONB/Enum/UUID, Case-insensitive for Text).
+    *   `!=`: Not equal.
+    *   `~`: Case-insensitive partial match using Trigram indexing (optimized for large datasets).
+    *   `!~`: Case-insensitive partial non-match.
+    *   `@`: Full-text search (Action & Message).
+    *   `<`, `>`, `<=`, `>=`: Range comparisons for timestamps (must follow RFC3339).
+
+    **Facets & JSONB:**
+    Filter by specific columns or deep-nest fields using dot notation:
+    *   `level=error`
+    *   `action~"login"`
+    *   `actor.email="user@example.com"`
+    *   `metadata.status_code=500`
+
+    **Advanced Usage:**
+    *   **Grouped Values:** Use commas for "OR" logic within a facet: `level=error,warn`.
+    *   **Null Checks:** Check for presence/absence of fields: `metadata.user_id=null` or `message!=null`.
+    *   **General Search:** Any word not part of a facet is treated as a full-text search across `action` and `message`.
+
+    ### Example LCQL Queries
+    *   **Basic Filtering:** `level=error action="user login"`
+    *   **Partial Match:** `action~"login*"` (Finds "login", "login_failed", etc.)
+    *   **Deep JSONB Filter:** `actor.name="John Doe" metadata.status_code=500`
+    *   **Full-Text Search:** `message@"connection timed out"`
+    *   **Timestamp Range:** `timestamp > "2025-08-17T00:00:00Z" timestamp < "2025-08-19T00:00:00Z"`
+    *   **Grouped Logic:** `level=error,warn tag=critical`
+    *   **Null Presence:** `context.request_id!=null`
+  version: 1.1.0
+servers:
+  - url: https://api.logtrail.net/api/v1/workspace
+    description: Production API server
+paths:
+  /logs:
+    get:
+      summary: Find logs
+      description: |
+        Retrieve a list of logs based on simple filters.
+        **Required Permission:** `logs:read`
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/FromQuery'
+        - $ref: '#/components/parameters/ToQuery'
+        - $ref: '#/components/parameters/ActionQuery'
+        - $ref: '#/components/parameters/MessageQuery'
+        - $ref: '#/components/parameters/EnvironmentsQuery'
+        - $ref: '#/components/parameters/LevelsQuery'
+        - $ref: '#/components/parameters/TagsQuery'
+        - $ref: '#/components/parameters/PageSizeQuery'
+        - $ref: '#/components/parameters/CursorIDQuery'
+        - $ref: '#/components/parameters/CursorTSQuery'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LogEntry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Create a log
+      description: |
+        Ingest a single log entry into the system.
+        **Required Permission:** `logs:write`
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLogRequest'
+      responses:
+        '201':
+          description: Created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /logs/{id}:
+    get:
+      summary: Get log by ID
+      description: |
+        Retrieve a specific log entry by its UUID.
+        **Required Permission:** `logs:read`
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogEntry'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /logs/query:
+    post:
+      summary: Search logs
+      description: |
+        Search logs using a structured query object or the Logtrail Custom Query Language (LCQL).
+        **Required Permission:** `logs:read`
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchLogsRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LogEntry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /logs/bulk:
+    post:
+      summary: Bulk create logs
+      description: |
+        Ingest multiple log entries in a single request.
+        **Required Permission:** `logs:write`
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CreateLogRequest'
+      responses:
+        '201':
+          description: Created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  parameters:
+    FromQuery:
+      name: from
+      in: query
+      description: Start timestamp (RFC3339)
+      schema: { type: string, format: date-time }
+    ToQuery:
+      name: to
+      in: query
+      description: End timestamp (RFC3339)
+      schema: { type: string, format: date-time }
+    ActionQuery:
+      name: action
+      in: query
+      description: Filter by log action (fuzzy match)
+      schema: { type: string }
+    MessageQuery:
+      name: message
+      in: query
+      description: Filter by log message (fuzzy match)
+      schema: { type: string }
+    EnvironmentsQuery:
+      name: environments
+      in: query
+      description: CSV of environments (development, staging, production)
+      schema: { type: string }
+    LevelsQuery:
+      name: levels
+      in: query
+      description: CSV of log levels (trace, debug, info, warn, error, fatal)
+      schema: { type: string }
+    TagsQuery:
+      name: tags
+      in: query
+      description: CSV of tags
+      schema: { type: string }
+    PageSizeQuery:
+      name: pageSize
+      in: query
+      description: Number of results per page
+      schema: { type: integer, minimum: 10, maximum: 100, default: 50 }
+    CursorIDQuery:
+      name: cursorID
+      in: query
+      description: Cursor ID for pagination (UUID)
+      schema: { type: string, format: uuid }
+    CursorTSQuery:
+      name: cursorTS
+      in: query
+      description: Cursor timestamp for pagination (RFC3339)
+      schema: { type: string, format: date-time }
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    TooManyRequests:
+      description: Too Many Requests
+      headers:
+        X-RateLimit-Limit: { schema: { type: integer } }
+        X-RateLimit-Remaining: { schema: { type: integer } }
+        X-RateLimit-Reset: { schema: { type: integer } }
+        Retry-After: { schema: { type: integer } }
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error: { type: string }
+        message: { type: string }
+
+    LogEntry:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        environment: { type: string, enum: [development, staging, production] }
+        level: { type: string, enum: [trace, debug, info, warn, error, fatal] }
+        action: { type: string }
+        message: { type: string, nullable: true }
+        tags: { type: array, items: { type: string } }
+        actor: { type: object, additionalProperties: true, nullable: true }
+        target: { type: object, additionalProperties: true, nullable: true }
+        context: { type: object, additionalProperties: true, nullable: true }
+        metadata: { type: object, additionalProperties: true, nullable: true }
+        client_timestamp: { type: string, format: date-time }
+        server_timestamp: { type: string, format: date-time }
+
+    CreateLogRequest:
+      type: object
+      required: [action, level, clientTimestamp]
+      properties:
+        action: { type: string }
+        level: { type: string, enum: [trace, debug, info, warn, error, fatal] }
+        tags: { type: array, items: { type: string } }
+        message: { type: string }
+        clientTimestamp: { type: string, format: date-time }
+        actor: { type: object, additionalProperties: true }
+        target: { type: object, additionalProperties: true }
+        context: { type: object, additionalProperties: true }
+        metadata: { type: object, additionalProperties: true }
+      example:
+        action: "user.login"
+        level: "info"
+        message: "User logged in successfully"
+        clientTimestamp: "2025-08-16T10:00:00Z"
+        actor:
+          id: "user_123"
+          email: "alex@example.com"
+        context:
+          ip: "192.168.1.1"
+          user_agent: "Mozilla/5.0..."
+        tags: ["auth", "prod"]
+
+    SearchLogsRequest:
+      type: object
+      properties:
+        from: { type: string, format: date-time }
+        to: { type: string, format: date-time }
+        action: { type: string }
+        query: { type: string }
+        cursorID: { type: string, format: uuid }
+        cursorTS: { type: string, format: date-time }
+        pageSize: { type: integer, minimum: 10, maximum: 100 }
+      example:
+        query: 'level=error action~"login*" actor.email="user@example.com"'
+        pageSize: 50

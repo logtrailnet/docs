@@ -1,0 +1,54 @@
+---
+title: Logtrail Documentation
+description: The high-performance, AI-friendly logging platform for modern engineering teams.
+template: splash
+hero:
+  tagline: Ingest, query, and visualize your logs with millisecond latency. Built for developers and AI agents.
+  image:
+    file: ../../assets/houston.webp
+  actions:
+    - text: Get Started
+      link: /getting-started/quickstart/
+      icon: right-arrow
+    - text: AI Agent Hub
+      link: /reference/ai-hub/
+      icon: rocket
+      variant: secondary
+    - text: API Reference
+      link: /api-reference/
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Why Logtrail?
+
+<CardGrid stagger>
+	<Card title="AI-Ready Metadata" icon="rocket">
+		Native `llms.txt` and `AGENT.md` support. Your vibe coding tools and AI agents can integrate Logtrail into your project in seconds.
+	</Card>
+	<Card title="Lightning Fast Search" icon="rocket">
+		Powered by optimized Postgres indexing. Deliver query results in milliseconds, even across millions of rows.
+	</Card>
+	<Card title="Deep JSON Filtering" icon="magnifier">
+		Query nested JSON fields in your metadata using standard dot notation. No more complex parsing logic.
+	</Card>
+	<Card title="Developer First" icon="setting">
+		Simple REST API, type-safe SDKs, and a powerful custom query language (LCQL) designed for humans and machines.
+	</Card>
+</CardGrid>
+
+## Built for the AI Era
+
+Logtrail is designed to be the easiest logging platform to integrate using AI agents like **Cursor**, **Windsurf**, and **Claude Engineer**.
+
+*   **Zero-Config AI Discovery**: AI tools automatically understand our API surface via structured metadata.
+*   **Agentic Search**: LCQL's natural syntax allows agents to construct complex filters without writing raw SQL.
+*   **Automated Validation**: Use the `/validate` endpoint to let your AI tools verify ingestion payloads before they hit production.
+
+---
+
+<center>
+  [Join the Public Beta](https://app.logtrail.net) | [GitHub Repository](https://github.com/logtrailnet/docs)
+</center>

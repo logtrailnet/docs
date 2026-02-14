@@ -1,0 +1,23 @@
+{
+  "name": "logtrail-docs",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "Official documentation for the Logtrail high-performance logging platform.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.0",
+    "@astrojs/starlight": "^0.37.6",
+    "@iconify-json/lucide": "^1.2.90",
+    "@scalar/astro": "^0.1.16",
+    "astro": "^5.17.2",
+    "sharp": "^0.34.2",
+    "starlight-ion-theme": "^2.3.3"
+  }
+}
