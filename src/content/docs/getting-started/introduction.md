@@ -5,6 +5,15 @@ description: Welcome to Logtrail, the high-performance logging platform.
 
 Logtrail is a high-performance, developer-first logging platform designed for modern engineering teams. It provides sub-second search speeds, deep JSON metadata filtering, and seamless integration with your existing stack.
 
+## Hierarchy & Concepts
+
+To keep your data organized and secure, Logtrail uses a simple hierarchy:
+
+- **Organization**: Your company or personal account. All billing and user management happens here.
+- **Project**: A logical grouping within an organization (e.g., "Web App", "API Service").
+- **Workspace**: Each project contains multiple workspaces corresponding to your environments (`development`, `staging`, `production`).
+- **API Key**: Scoped to a specific workspace and environment.
+
 ## Built for Scale
 
 Modern applications generate millions of logs. Traditional solutions are either too slow, too expensive, or too complex to manage. Logtrail was built from the ground up to handle high-throughput streams while providing the flexibility of a schemaless database.

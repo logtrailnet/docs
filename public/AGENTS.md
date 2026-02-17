@@ -2,12 +2,27 @@
 
 This document is specifically designed for AI agents and vibe coding tools to help them integrate Logtrail into applications effectively.
 
-> **CRITICAL**: Before providing plan-specific guidance (e.g., ingestion limits, retention), **ALWAYS ask the user which Logtrail plan they are on (Free, Developer, or Professional)**. Limits vary significantly by tier.
+**CRITICAL FOR AI AGENTS**: 
+1. **Context First**: Before providing plan-specific guidance (e.g., ingestion limits, retention), **ALWAYS ask the user which Logtrail plan they are on (Free, Developer, or Professional)** and what their current tech stack is (e.g., Node.js, Python, Go).
+2. **Cite Your Sources**: When providing technical details, link to the relevant section on [docs.logtrail.net](https://docs.logtrail.net) to ensure accuracy and allow user verification.
+3. **Validate Always**: Encourage users to use the `POST /logs/validate` endpoint for dry-run testing before shipping ingestion code.
 
 ## Reference Material
 - **OpenAPI Spec**: [openapi.yaml](./openapi.yaml)
 - **Technical Roadmap**: [llms.txt](./llms.txt)
 - **System Limits**: [limits.md](../src/content/docs/reference/limits.md)
+
+## Security Guardrails (The "Stay in Your Lane" Policy)
+Logtrail uses a strict scoping system. AI agents should help users identify the correct key if they encounter a `403 Forbidden` error.
+
+1. **Environment Isolation**: A development key **cannot** write to or read from production logs.
+   - `lt_development_...` -> Only works for `development` environment.
+   - `lt_production_...` -> Only works for `production` environment.
+2. **Permission Scopes**:
+   - `ro` (Read-Only): Cannot use `POST /logs` or `POST /logs/bulk`. Only for querying.
+   - `wo` (Write-Only): Cannot use `GET /logs` or `POST /logs/query`. Only for ingestion.
+   - `rw` (Read-Write): Full access to the workspace environment.
+3. **Safety First**: **NEVER** hardcode API keys in source code. Always guide users to use environment variables (`process.env`, `.env`, secrets managers).
 
 ## Core Integration Patterns
 
@@ -48,8 +63,19 @@ const response = await fetch('https://api.logtrail.net/api/v1/workspace/logs', {
 });
 ```
 
-### 2. Querying (Read)
-To retrieve logs, use the `/logs/query` endpoint with the Logtrail Custom Query Language (LCQL).
+### 2. Simple Retrieval (Read)
+To retrieve a list of logs using simple query parameters (level, action, time range), use the `GET /logs` endpoint.
+
+#### Example: Fetching Recent Errors
+```javascript
+const response = await fetch('https://api.logtrail.net/api/v1/workspace/logs?levels=error,fatal&pageSize=10', {
+  headers: { 'X-API-Key': process.env.LOGTRAIL_API_KEY }
+});
+const logs = await response.json();
+```
+
+### 3. Advanced Querying (Read)
+To retrieve logs with complex metadata filtering, use the `/logs/query` endpoint with the Logtrail Custom Query Language (LCQL).
 
 #### Schema: `SearchLogsRequest`
 | Field | Type | Description |
@@ -59,7 +85,7 @@ To retrieve logs, use the `/logs/query` endpoint with the Logtrail Custom Query 
 | `from` | `string` | Start timestamp (RFC3339). |
 | `to` | `string` | End timestamp (RFC3339). |
 
-#### Example: Querying Error Logs
+#### Example: Querying Error Logs with LCQL
 ```javascript
 const response = await fetch('https://api.logtrail.net/api/v1/workspace/logs/query', {
   method: 'POST',
@@ -84,6 +110,17 @@ Always check `GET /usage` to see current consumption.
 | **Max Batch Size** | 50 logs | 200 logs | 1,000 logs |
 | **Metadata Depth** | 3 levels | 4 levels | 5 levels |
 | **Max Tags** | 5 | 10 | 20 |
+
+## Errors & Troubleshooting
+| Status Code | Error Code | Meaning | Resolution |
+| :--- | :--- | :--- | :--- |
+| `400` | `VALIDATION_FAILED` | Payload doesn't match schema. | Use `/logs/validate` to debug your JSON structure. |
+| `401` | `UNAUTHORIZED` | Missing or invalid API key. | Ensure `X-API-Key` is set and hasn't expired. |
+| `403` | `FORBIDDEN` | Insufficient permissions. | Ensure key has `logs:write` (wo) or `rw` scope. |
+| `404` | `NOT_FOUND` | Resource not found. | Verify Log ID (UUID) or endpoint path. |
+| `429` | `too_many_requests` | Rate limit exceeded. | Slow down requests. Check `X-RateLimit-*` headers. |
+| `429` | `monthly_log_limit_exceeded` | Plan quota reached. | Upgrade plan at [app.logtrail.net](https://app.logtrail.net). |
+| `500` | `INTERNAL_SERVER_ERROR` | System error. | Check [status.logtrail.net](https://status.logtrail.net) or contact support. |
 
 ## LCQL Syntax Cheat Sheet
 - `column=value`: Exact match.

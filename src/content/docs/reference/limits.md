@@ -31,8 +31,16 @@ To maintain sub-second search performance, we enforce strict validation on incom
 
 Logtrail uses a token-bucket algorithm for rate limiting. Limits are enforced per API key.
 
-*   **X-RateLimit-Remaining**: This header indicates how many requests you have left in the current window.
+*   **X-RateLimit-Limit**: The maximum number of requests allowed in the current window.
+*   **X-RateLimit-Remaining**: The number of requests remaining in the current window.
+*   **X-RateLimit-Reset**: The time (Unix timestamp) when the window resets.
 *   **Monthly Quota**: If you exceed your monthly ingestion quota, the API will return a `429 Too Many Requests` status with the error code `monthly_log_limit_exceeded`.
+
+## Overage Calculations
+
+- **Log Size**: Calculated as the byte length of the raw JSON string received by the API.
+- **Monthly Usage**: Resets at **00:00 UTC on the 1st of every month**.
+- **Metadata Depth**: We count the number of nesting levels within the `actor`, `target`, `context`, and `metadata` objects. The root level is 1.
 
 ## Overages & Grace Periods
 

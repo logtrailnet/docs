@@ -1,0 +1,29 @@
+---
+import type { Props } from '@astrojs/starlight/props';
+import Default from '@astrojs/starlight/components/SiteTitle.astro';
+---
+
+<div class="site-title-container">
+  <span class="logo-dot"></span>
+  <Default {...Astro.props} />
+</div>
+
+<style>
+  .site-title-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .logo-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--logtrail-accent);
+    border-radius: 50%;
+    animation: pulse-dot 2.5s ease-in-out infinite;
+    display: inline-block;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--logtrail-accent-mid); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 6px var(--logtrail-accent-dim); }
+  }
+</style>

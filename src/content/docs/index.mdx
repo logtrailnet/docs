@@ -1,54 +1,77 @@
 ---
-title: Logtrail Documentation
-description: The high-performance, AI-friendly logging platform for modern engineering teams.
+title: logtrail
+description: The logging platform built for AI-era apps. One integration gives you internal debugging logs and a user-facing activity trail.
 template: splash
 hero:
-  tagline: Ingest, query, and visualize your logs with millisecond latency. Built for developers and AI agents.
+  tagline: The logging platform built for AI-era apps. One integration gives you internal debugging logs and a user-facing activity trail.
   image:
     file: ../../assets/houston.webp
   actions:
-    - text: Get Started
+    - text: Start free
       link: /getting-started/quickstart/
       icon: right-arrow
-    - text: AI Agent Hub
-      link: /reference/ai-hub/
+    - text: Read docs
+      link: /getting-started/introduction/
       icon: rocket
       variant: secondary
-    - text: API Reference
-      link: /api-reference/
+    - text: "TLDR: Ask GPT"
+      link: "https://chatgpt.com/?q=I%27m%20building%20with%20Logtrail.%20Use%20https%3A%2F%2Fdocs.logtrail.net%2Fllms.txt%20and%20https%3A%2F%2Fdocs.logtrail.net%2FAGENTS.md%20to%20help%20me%20integrate%20logging%20and%20user%20activity%20feeds.%20Let%27s%20ship%20it%20faster%20than%20a%2014yo%20on%20X.%20No%20cap."
       icon: external
       variant: minimal
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Why Logtrail?
+<h1 style="font-family: 'Instrument Serif', serif; font-size: clamp(2.8rem, 7vw, 4.8rem); font-weight: 400; line-height: 1.1; letter-spacing: -0.03em; text-align: center; margin-bottom: 24px;">
+  Add logs & <em style="color: var(--logtrail-accent); font-style: italic;">activity feeds</em><br/>in one prompt
+</h1>
+
+## High Aura Logging
 
 <CardGrid stagger>
-	<Card title="AI-Ready Metadata" icon="rocket">
-		Native `llms.txt` and `AGENTS.md` support. Your vibe coding tools and AI agents can integrate Logtrail into your project in seconds.
+	<Card title="+1000 Aura" icon="rocket">
+		Integrate in one prompt. Logtrail is the first logging platform designed for vibe-coding. Zero friction, all speed.
 	</Card>
-	<Card title="Lightning Fast Search" icon="rocket">
-		Powered by optimized Postgres indexing. Deliver query results in milliseconds, even across millions of rows.
+	<Card title="Instant Reflexes" icon="rocket">
+		Powered by optimized Postgres indexing. Deliver query results in milliseconds, even across millions of rows. No lag, just vibes.
 	</Card>
-	<Card title="Deep JSON Filtering" icon="magnifier">
-		Query nested JSON fields in your metadata using standard dot notation. No more complex parsing logic.
+	<Card title="No-Parse Paradise" icon="magnifier">
+		Query nested JSON fields in your metadata using standard dot notation. Stop wasting time parsing strings like it's 2015.
 	</Card>
-	<Card title="Developer First" icon="setting">
-		Simple REST API, type-safe SDKs, and a powerful custom query language (LCQL) designed for humans and machines.
+	<Card title="Agentic by Default" icon="setting">
+		Simple REST API, type-safe SDKs, and structured metadata that AI agents (Cursor, Windsurf) can understand instantly.
 	</Card>
 </CardGrid>
 
-## Built for the AI Era
+## The New Standard for AI-Built Apps
 
-Logtrail is designed to be the easiest logging platform to integrate using AI agents like **Cursor**, **Windsurf**, and **Claude Engineer**.
+Don't be the developer still writing raw SQL for logs or building custom activity feeds from scratch. Join the **Logtrail era**.
 
-*   **Zero-Config AI Discovery**: AI tools automatically understand our API surface via structured metadata.
-*   **Agentic Search**: LCQL's natural syntax allows agents to construct complex filters without writing raw SQL.
-*   **Automated Validation**: Use the `/validate` endpoint to let your AI tools verify ingestion payloads before they hit production.
+<CardGrid>
+	<Card title="Instant Professionalism" icon="star">
+		Add a **User Activity Feed** that looks like Stripe's or Vercel's in 3 minutes. Your users will think you have a 10-person engineering team.
+	</Card>
+	<Card title="Zero-Boilerplate Energy" icon="rocket">
+		If your AI agent can't set up your logging in one prompt, you're using the wrong tool. Logtrail is the only platform that speaks fluent AI.
+	</Card>
+	<Card title="Future-Proof Ingestion" icon="approve-check">
+		The `/validate` endpoint is your safety net. Let your agent verify every payload before it hits production. No more broken metadata.
+	</Card>
+	<Card title="Infinite Scalability" icon="list-format">
+		From your first 100 logs to 100 million. We handle the infra, you keep the vibes.
+	</Card>
+</CardGrid>
 
 ---
 
 <center>
-  [Join the Public Beta](https://app.logtrail.net) | [GitHub Repository](https://github.com/logtrailnet/docs)
+  <div style="background: var(--logtrail-accent-dim); border: 1px solid var(--logtrail-accent-mid); padding: 24px; border-radius: 16px; margin: 40px 0;">
+    <h3 style="margin-top: 0; font-family: 'Instrument Serif', serif; font-size: 2rem;">Join the Beta Wave</h3>
+    <p style="margin-bottom: 20px;">We're currently in public beta. Reserve your workspace name before it's taken.</p>
+    [Claim Your Workspace Name](https://app.logtrail.net) | [Star on GitHub](https://github.com/logtrailnet/docs)
+  </div>
+</center>
+
+<center>
+  [OpenAPI Spec](/openapi.yaml) | [AI Agent Guide](/AGENTS.md) | [Claude Context](/claude.md)
 </center>

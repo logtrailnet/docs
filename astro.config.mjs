@@ -13,12 +13,19 @@ export default defineConfig({
 	},
 	integrations: [
 		starlight({
-			title: 'Logtrail Docs',
+			title: 'logtrail',
+			description: 'The high-performance, AI-friendly logging platform for modern engineering teams.',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/logtrailnet' }],
+			customCss: ['./src/styles/custom.css'],
+			components: {
+				SiteTitle: './src/components/SiteTitle.astro',
+			},
 			plugins: [
 				ion({
 					icons: {
-						collections: ['lucide'],
+						include: {
+							lucide: ['*'],
+						},
 					},
 					footer: {
 						text: '© 2026 Logtrail. Built for speed and AI.',
@@ -34,6 +41,19 @@ export default defineConfig({
 				{
 					tag: 'meta',
 					attrs: { name: 'twitter:card', content: 'summary_large_image' },
+				},
+				// SEO and Discovery
+				{
+					tag: 'meta',
+					attrs: { name: 'keywords', content: 'logging, activity feed, ai logging, logtrail, developer tools, internal tools' },
+				},
+				{
+					tag: 'meta',
+					attrs: { name: 'author', content: 'Logtrail Team' },
+				},
+				{
+					tag: 'link',
+					attrs: { rel: 'alternate', type: 'text/plain', href: '/llms.txt', title: 'LLM Context' },
 				},
 				// Favicons and App Icons
 				{
@@ -61,14 +81,18 @@ export default defineConfig({
 					items: [
 						{ label: 'Query Language (LCQL)', link: '/guides/lcql' },
 						{ label: 'Discovery & Validation', link: '/guides/discovery-and-validation' },
+						{ label: 'Security Best Practices', link: '/guides/security-best-practices' },
+						{ label: 'Migrating to Production', link: '/guides/migrating-to-production' },
 					],
 				},
 				{
 					label: '[lucide:file-code] Reference',
 					items: [
+						{ label: 'Authentication', link: '/reference/authentication' },
 						{ label: 'AI & Agent Hub', link: '/reference/ai-hub' },
 						{ label: 'SDKs & Libraries', link: '/reference/sdks' },
 						{ label: 'System Limits', link: '/reference/limits' },
+						{ label: 'Glossary', link: '/reference/glossary' },
 						{ label: 'API Reference', link: '/api-reference' },
 					],
 				},
@@ -81,6 +105,13 @@ export default defineConfig({
 				},
 			],
 		}),
-		sitemap(),
+		sitemap({
+			customPages: [
+				'https://docs.logtrail.net/openapi.yaml',
+				'https://docs.logtrail.net/AGENTS.md',
+				'https://docs.logtrail.net/llms.txt',
+				'https://docs.logtrail.net/claude.md',
+			],
+		}),
 	],
 });

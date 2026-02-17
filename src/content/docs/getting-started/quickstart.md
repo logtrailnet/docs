@@ -8,7 +8,9 @@ Welcome to Logtrail! Follow this guide to send your first log entry and see it i
 ## 1. Get an API Key
 
 Log in to the [Logtrail Dashboard](https://app.logtrail.net) and navigate to **Settings > API Keys**. 
-Generate a new key with `logs:write` permissions. Your key will look like `lt_development_rw_...`.
+Generate a new key with `logs:write` permissions.
+
+Your key will follow the format `lt_{env}_{type}_{string}`. For more details on key scoping and security, see the [Authentication Reference](/reference/authentication).
 
 ## 2. Send your first log
 
