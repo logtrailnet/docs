@@ -1,4 +1,36 @@
+# Allow all web crawlers and LLM bots to access all pages
 User-agent: *
+Allow: /
+
+# Specifically inviting common LLM and AI agents
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Anthropic-AI
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: YouBot
 Allow: /
 
 Sitemap: https://docs.logtrail.net/sitemap-index.xml

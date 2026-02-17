@@ -20,7 +20,7 @@ This repository houses the official documentation for [Logtrail](https://app.log
 Logtrail is built for the AI era. This documentation hub provides structured metadata to ensure vibe coding tools and AI agents can integrate Logtrail into any project seamlessly:
 
 - **`llms.txt`**: A technical roadmap for LLMs.
-- **`AGENT.md`**: Specialized technical instructions for agentic ingestion and querying.
+- **`AGENTS.md`**: Specialized technical instructions for agentic ingestion and querying.
 - **`claude.md`**: XML-optimized context for Anthropic's Claude.
 
 ## 🚀 Development

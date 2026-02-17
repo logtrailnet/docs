@@ -1,19 +1,13 @@
-# Logtrail Integration Guide for Claude
+# Logtrail AI Agent Guide
 
-This guide is optimized for Claude (Anthropic) to help it integrate Logtrail into projects.
+This document is specifically designed for AI agents and vibe coding tools to help them integrate Logtrail into applications effectively.
 
 > **CRITICAL**: Before providing plan-specific guidance (e.g., ingestion limits, retention), **ALWAYS ask the user which Logtrail plan they are on (Free, Developer, or Professional)**. Limits vary significantly by tier.
 
-<logtrail_api_context>
 ## Reference Material
 - **OpenAPI Spec**: [openapi.yaml](./openapi.yaml)
 - **Technical Roadmap**: [llms.txt](./llms.txt)
 - **System Limits**: [limits.md](../src/content/docs/reference/limits.md)
-
-## Authentication
-- **Base URL**: `https://api.logtrail.net/api/v1/workspace`
-- **Auth Header**: `X-API-Key: <YOUR_KEY>`
-- **Environment Prefixes**: `lt_development_` (Dev), `lt_staging_` (Staging), `lt_production_` (Prod).
 
 ## Core Integration Patterns
 
@@ -36,23 +30,21 @@ To send logs to Logtrail, use the `/logs` (single) or `/logs/bulk` (batch) endpo
 
 #### Example: Ingesting a Log (Node.js)
 ```javascript
-const logEntry = {
-  action: 'user.signup',
-  level: 'info',
-  message: 'New user registered',
-  clientTimestamp: new Date().toISOString(),
-  actor: { id: 'user_123', email: 'jane.doe@example.com' },
-  metadata: { plan: 'pro', referral: 'google' },
-  tags: ['onboarding']
-};
-
 const response = await fetch('https://api.logtrail.net/api/v1/workspace/logs', {
   method: 'POST',
   headers: {
     'X-API-Key': process.env.LOGTRAIL_API_KEY,
     'Content-Type': 'application/json'
   },
-  body: JSON.stringify(logEntry)
+  body: JSON.stringify({
+    action: 'payment.processed',
+    level: 'info',
+    message: 'Payment of $50.00 successful',
+    clientTimestamp: new Date().toISOString(),
+    actor: { id: 'user_99', email: 'customer@example.com' },
+    metadata: { amount: 5000, currency: 'USD', gateway: 'stripe' },
+    tags: ['billing', 'prod']
+  })
 });
 ```
 
@@ -69,18 +61,16 @@ To retrieve logs, use the `/logs/query` endpoint with the Logtrail Custom Query 
 
 #### Example: Querying Error Logs
 ```javascript
-const searchRequest = {
-  query: 'level=error,fatal actor.id="user_123" action~"auth*"',
-  pageSize: 10
-};
-
 const response = await fetch('https://api.logtrail.net/api/v1/workspace/logs/query', {
   method: 'POST',
   headers: {
     'X-API-Key': process.env.LOGTRAIL_API_KEY,
     'Content-Type': 'application/json'
   },
-  body: JSON.stringify(searchRequest)
+  body: JSON.stringify({
+    query: 'level=error,fatal actor.id="user_99" action~"payment*"',
+    pageSize: 10
+  })
 });
 const logs = await response.json();
 ```
@@ -102,5 +92,3 @@ Always check `GET /usage` to see current consumption.
 - `column@value`: Full-text search (Action & Message).
 - `level=error,warn`: OR logic for levels.
 - `metadata.user_id=null`: Check for missing fields.
-</logtrail_api_context>
-

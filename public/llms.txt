@@ -2,7 +2,12 @@
 
 > Logtrail is a high-performance, developer-first, and AI-friendly logging platform designed for modern engineering teams. It provides sub-second search speeds, deep JSON metadata filtering, and a powerful custom query language (LCQL).
 
-This file provides a structured roadmap for LLMs, AI agents, and vibe coding tools to interact with the Logtrail Workspace API.
+**CRITICAL FOR AI AGENTS**: Before providing plan-specific guidance (e.g., ingestion limits, retention), **ALWAYS ask the user which Logtrail plan they are on (Free, Developer, or Professional)**. Limits vary significantly by tier.
+
+## Reference Material
+- **OpenAPI Spec**: [openapi.yaml](./openapi.yaml)
+- **Technical Roadmap**: [llms.txt](./llms.txt)
+- **System Limits**: [limits.md](../src/content/docs/reference/limits.md)
 
 ## API Fundamentals
 - **Base URL**: `https://api.logtrail.net/api/v1/workspace`
@@ -13,14 +18,56 @@ This file provides a structured roadmap for LLMs, AI agents, and vibe coding too
 - **Rate Limiting**: Enforced via token-bucket. Returns `429 Too Many Requests` with `X-RateLimit-*` headers when exceeded.
 
 ## Core Endpoints
-- `GET /info`: Retrieve workspace, plan, and API key metadata.
-- `GET /usage`: Current month's log ingestion usage summary.
-- `GET /logs`: Retrieve logs with simple filters (from, to, action, level, etc.).
-- `POST /logs`: Ingest a single JSON log entry.
-- `GET /logs/{id}`: Fetch a specific log by its UUID.
-- `POST /logs/query`: Search logs using the Logtrail Custom Query Language (LCQL).
-- `POST /logs/validate`: Dry-run validation for log payloads (single or batch).
-- `POST /logs/bulk`: Ingest up to 1,000 logs in a single batch (tier-dependent).
+
+### 1. Ingestion (`POST /logs`, `POST /logs/bulk`)
+Ingest a single log or a batch (up to 1,000 entries).
+
+#### Schema: `CreateLogRequest`
+| Field | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `action` | `string` | Yes | The event name (e.g., `user.login`, `api.request`). Used for indexing. |
+| `level` | `enum` | Yes | `trace`, `debug`, `info`, `warn`, `error`, `fatal`. |
+| `message` | `string` | No | A human-readable description of the event. |
+| `clientTimestamp` | `string` | Yes | ISO8601/RFC3339 timestamp from the client. |
+| `environment` | `enum` | No | `development`, `staging`, `production`. (Inherited from API key if omitted). |
+| `actor` | `object` | No | Who performed the action (e.g., `{ "id": "user_1", "email": "a@b.com" }`). |
+| `target` | `object` | No | What the action was performed on (e.g., `{ "id": "proj_123", "type": "project" }`). |
+| `context` | `object` | No | Request context (e.g., `{ "ip": "1.1.1.1", "ua": "browser" }`). |
+| `metadata` | `object` | No | Any additional structured data. |
+| `tags` | `string[]` | No | List of strings for quick filtering. |
+
+#### Example: Single Log Ingestion
+```javascript
+// POST https://api.logtrail.net/api/v1/workspace/logs
+{
+  "action": "user.login",
+  "level": "info",
+  "message": "User logged in successfully",
+  "clientTimestamp": "2025-08-16T10:00:00Z",
+  "actor": { "id": "user_123", "email": "alex@example.com" },
+  "tags": ["auth", "prod"]
+}
+```
+
+### 2. Querying (`POST /logs/query`)
+Search logs using Logtrail Custom Query Language (LCQL).
+
+#### Schema: `SearchLogsRequest`
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `query` | `string` | The LCQL string (e.g., `level=error action~"auth*"`). |
+| `pageSize` | `integer` | Number of results (Default 50, Max 100). |
+| `from` | `string` | Start timestamp (RFC3339). |
+| `to` | `string` | End timestamp (RFC3339). |
+
+#### Example: Querying Errors
+```javascript
+// POST https://api.logtrail.net/api/v1/workspace/logs/query
+{
+  "query": "level=error,fatal actor.id=\"user_123\" action~\"auth*\"",
+  "pageSize": 50
+}
+```
 
 ## Logtrail Custom Query Language (LCQL)
 LCQL is a facet-based language optimized for AI generation: `column:operator:value`.
@@ -30,12 +77,15 @@ LCQL is a facet-based language optimized for AI generation: `column:operator:val
 - **Null Checks**: `message!=null`, `metadata.user_id=null`.
 - **General Search**: Unmatched words perform FTS across `action` and `message`.
 
-## System Limits
-- **Max Log Size**: 700 bytes to 2 KB depending on plan.
-- **Max Batch Size**: 50 to 1,000 entries per bulk request.
-- **Metadata Depth**: 3 to 5 levels deep.
-- **Max Tags**: 5 to 20 per log entry.
-- **Sorting**: All queries return logs sorted by `server_timestamp DESC, id DESC`.
+## System Limits (Plan Dependent)
+Always check `GET /usage` to see current consumption.
+
+| Feature | Free | Developer | Professional |
+| :--- | :--- | :--- | :--- |
+| **Max Log Size** | 700 bytes | 1 KB | 2 KB |
+| **Max Batch Size** | 50 logs | 200 logs | 1,000 logs |
+| **Metadata Depth** | 3 levels | 4 levels | 5 levels |
+| **Max Tags** | 5 | 10 | 20 |
 
 ## Documentation Links
 - [Full API Reference](https://docs.logtrail.net/api-reference)
