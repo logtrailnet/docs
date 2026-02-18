@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import sitemap from '@astrojs/sitemap';
+import robots from 'astro-robots-txt';
 import { ion } from 'starlight-ion-theme';
 
 // https://astro.build/config
@@ -13,12 +14,13 @@ export default defineConfig({
 	},
 	integrations: [
 		starlight({
-			title: 'logtrail',
+			title: 'Logtrail',
 			description: 'The high-performance, AI-friendly logging platform for modern engineering teams.',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/logtrailnet' }],
 			customCss: ['./src/styles/custom.css'],
 			components: {
 				SiteTitle: './src/components/SiteTitle.astro',
+				Head: './src/components/CustomHead.astro',
 			},
 			plugins: [
 				ion({
@@ -28,7 +30,7 @@ export default defineConfig({
 						},
 					},
 					footer: {
-						text: '© 2026 Logtrail. Built for speed and AI.',
+						text: '© 2026 Logtrail. Built for speed and AI. Support: support@logtrail.net',
 					},
 				}),
 			],
@@ -41,6 +43,10 @@ export default defineConfig({
 				{
 					tag: 'meta',
 					attrs: { name: 'twitter:card', content: 'summary_large_image' },
+				},
+				{
+					tag: 'meta',
+					attrs: { name: 'twitter:image', content: 'https://docs.logtrail.net/og-image.png' },
 				},
 				// SEO and Discovery
 				{
@@ -73,6 +79,7 @@ export default defineConfig({
 					label: '[lucide:brain] Core Concepts',
 					items: [
 						{ label: 'Architecture', link: '/concepts/architecture' },
+						{ label: 'Use Cases', link: '/concepts/use-cases' },
 						{ label: 'Security & Privacy', link: '/concepts/security' },
 					],
 				},
@@ -91,6 +98,7 @@ export default defineConfig({
 						{ label: 'Authentication', link: '/reference/authentication' },
 						{ label: 'AI & Agent Hub', link: '/reference/ai-hub' },
 						{ label: 'SDKs & Libraries', link: '/reference/sdks' },
+						{ label: 'API Error Codes', link: '/reference/error-codes' },
 						{ label: 'System Limits', link: '/reference/limits' },
 						{ label: 'Glossary', link: '/reference/glossary' },
 						{ label: 'API Reference', link: '/api-reference' },
@@ -106,12 +114,19 @@ export default defineConfig({
 			],
 		}),
 		sitemap({
-			customPages: [
-				'https://docs.logtrail.net/openapi.yaml',
-				'https://docs.logtrail.net/AGENTS.md',
-				'https://docs.logtrail.net/llms.txt',
-				'https://docs.logtrail.net/claude.md',
-			],
+			filter: (page) => {
+				// Exclude non-HTML documentation files
+				return !(
+					page.includes('.md') ||
+					page.includes('.yaml') ||
+					page.includes('.txt') ||
+					page.includes('openapi') ||
+					page.includes('llms')
+				);
+			},
+		}),
+		robots({
+			sitemap: 'https://docs.logtrail.net/sitemap-index.xml',
 		}),
 	],
 });

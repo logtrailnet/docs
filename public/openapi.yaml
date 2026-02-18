@@ -1,6 +1,10 @@
 openapi: 3.1.0
 info:
   title: Logtrail Workspace API
+  contact:
+    name: Logtrail Support
+    email: support@logtrail.net
+    url: https://docs.logtrail.net
   description: |
     Public API for ingesting and querying logs in Logtrail.
 
@@ -25,6 +29,29 @@ info:
     Logtrail enforces different ingestion and query limits based on your subscription tier (Free, Developer, Professional).
     **Note: Plan features, pricing, and limits are subject to change.**
     Exceeding these limits will result in `429 Too Many Requests` responses. For a full comparison of tier-based limits, see our [System Limits Guide](https://docs.logtrail.net/reference/limits).
+
+    ### Error Handling
+    Logtrail uses standard HTTP status codes and a structured JSON error response.
+
+    #### Error Response Body
+    ```json
+    {
+      "error_code": "VALIDATION_FAILED",
+      "message": "A human-readable error message",
+      "request_id": "uuid-v4-request-id",
+      "details": { "field": "error details" }
+    }
+    ```
+
+    #### Available Error Codes
+    | Category | Code |
+    | :--- | :--- |
+    | **Auth** | `AUTH_MISSING_API_KEY`, `AUTH_INVALID_API_KEY`, `AUTH_API_KEY_EXPIRED`, `AUTH_CONTEXT_MISSING`, `AUTH_API_KEY_SCOPE_MISMATCH` |
+    | **Limits** | `RATE_LIMIT_IP_EXCEEDED`, `RATE_LIMIT_PLAN_EXCEEDED`, `RATE_LIMIT_VALIDATE_EXCEEDED`, `QUOTA_MONTHLY_LOG_LIMIT_EXCEEDED` |
+    | **Validation** | `VALIDATION_INVALID_REQUEST`, `VALIDATION_INVALID_CONTENT_TYPE`, `VALIDATION_EMPTY_BODY`, `VALIDATION_INVALID_JSON`, `VALIDATION_INVALID_ENVIRONMENT`, `VALIDATION_FAILED`, `VALIDATION_BULK_LIMIT_EXCEEDED`, `VALIDATION_QUERY_INVALID`, `VALIDATION_QUERY_SYNTAX`, `VALIDATION_QUERY_TIME_RANGE`, `VALIDATION_QUERY_CONSTRAINT` |
+    | **Internal** | `LOG_NOT_FOUND`, `INTERNAL_AUTH_ERROR`, `INTERNAL_LOG_SERVICE_ERROR`, `INTERNAL_SERVER_ERROR` |
+
+    For detailed descriptions, see our [API Error Codes Guide](https://docs.logtrail.net/reference/error-codes).
 
     ### Custom Query Language (LCQL)
     The `/logs/query` endpoint supports the **Logtrail Custom Query Language (LCQL)**, which provides advanced filtering capabilities beyond simple parameters.
@@ -401,7 +428,34 @@ components:
       type: object
       required: [error_code, message, request_id]
       properties:
-        error_code: { type: string, example: "VALIDATION_FAILED" }
+        error_code:
+          type: string
+          example: "VALIDATION_FAILED"
+          enum:
+            - "AUTH_MISSING_API_KEY"
+            - "AUTH_INVALID_API_KEY"
+            - "AUTH_API_KEY_EXPIRED"
+            - "AUTH_CONTEXT_MISSING"
+            - "AUTH_API_KEY_SCOPE_MISMATCH"
+            - "RATE_LIMIT_IP_EXCEEDED"
+            - "RATE_LIMIT_PLAN_EXCEEDED"
+            - "RATE_LIMIT_VALIDATE_EXCEEDED"
+            - "QUOTA_MONTHLY_LOG_LIMIT_EXCEEDED"
+            - "VALIDATION_INVALID_REQUEST"
+            - "VALIDATION_INVALID_CONTENT_TYPE"
+            - "VALIDATION_EMPTY_BODY"
+            - "VALIDATION_INVALID_JSON"
+            - "VALIDATION_INVALID_ENVIRONMENT"
+            - "VALIDATION_FAILED"
+            - "VALIDATION_BULK_LIMIT_EXCEEDED"
+            - "VALIDATION_QUERY_INVALID"
+            - "VALIDATION_QUERY_SYNTAX"
+            - "VALIDATION_QUERY_TIME_RANGE"
+            - "VALIDATION_QUERY_CONSTRAINT"
+            - "LOG_NOT_FOUND"
+            - "INTERNAL_AUTH_ERROR"
+            - "INTERNAL_LOG_SERVICE_ERROR"
+            - "INTERNAL_SERVER_ERROR"
         message: { type: string, example: "Validation failed" }
         request_id: { type: string, format: uuid }
         details: { type: object, additionalProperties: true }

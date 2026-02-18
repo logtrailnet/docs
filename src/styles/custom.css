@@ -98,3 +98,44 @@ body::before {
   font-weight: 500 !important;
   text-transform: lowercase;
 }
+
+/* Custom Hero Badge */
+.hero-public-beta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--logtrail-surface);
+  border: 1px solid var(--logtrail-border);
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--logtrail-text-secondary);
+  margin-top: 1.5rem;
+  transition: border-color 0.3s, color 0.3s;
+  text-decoration: none !important;
+}
+
+.hero-public-beta-badge:hover {
+  border-color: var(--logtrail-accent);
+  color: var(--logtrail-text);
+}
+
+.hero-public-beta-badge .badge-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--logtrail-accent);
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Fix button legibility on landing page */
+.sl-link-button.primary {
+  color: var(--logtrail-bg) !important;
+}
+
+.sl-link-button.primary:hover {
+  background-color: var(--logtrail-accent) !important;
+  filter: brightness(1.1);
+  color: var(--logtrail-bg) !important;
+}

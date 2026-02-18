@@ -3,6 +3,10 @@ title: Authentication
 description: Learn how to authenticate your requests to the Logtrail Workspace API.
 ---
 
+:::caution[Public Beta]
+Logtrail is currently in Public Beta. While we are committed to maintaining maximum backward compatibility, the API surface and schema are subject to change as we refine the platform based on user feedback.
+:::
+
 Logtrail uses API keys to authenticate requests. You can manage your API keys in the [Logtrail Dashboard](https://app.logtrail.net/settings/api-keys).
 
 ## API Key Format

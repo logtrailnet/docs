@@ -17,6 +17,7 @@
     "@iconify-json/lucide": "^1.2.90",
     "@scalar/astro": "^0.1.16",
     "astro": "^5.17.2",
+    "astro-robots-txt": "^1.0.0",
     "sharp": "^0.34.2",
     "starlight-ion-theme": "^2.3.3"
   },

@@ -1,0 +1,89 @@
+---
+import type { Props } from '@astrojs/starlight/props';
+
+const { url, entry } = Astro;
+const base = 'https://docs.logtrail.net';
+const canonical = new URL(url.pathname, base).toString();
+
+// Dynamic Breadcrumb schema based on URL segments
+const segments = url.pathname.split('/').filter(Boolean);
+const breadcrumbItems = [
+  {
+    "@type": "ListItem",
+    "position": 1,
+    "name": "Docs",
+    "item": base + "/"
+  },
+  ...segments.map((segment, i) => ({
+    "@type": "ListItem",
+    "position": i + 2,
+    "name": segment
+      .replace(/-/g, ' ')
+      .replace(/\b\w/g, c => c.toUpperCase()),
+    "item": `${base}/${segments.slice(0, i + 1).join('/')}/`
+  }))
+];
+
+// Organization & SoftwareApplication Schema
+const orgSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Logtrail",
+  "url": "https://logtrail.net",
+  "logo": base + "/favicon.svg"
+};
+
+const appSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Logtrail",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Web",
+  "url": "https://logtrail.net",
+  "description": "The logging platform built for AI-era apps. One integration gives you internal debugging logs and a user-facing activity trail.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+};
+
+const searchSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "url": base + "/",
+  "name": "Logtrail Docs",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": base + "/search?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+};
+---
+
+<!-- Character Encoding -->
+<meta charset="utf-8" />
+
+<!-- Canonical -->
+<link rel="canonical" href={canonical} />
+
+<!-- Meta Tags for SEO & Social Sharing -->
+{entry?.data?.description && <meta name="description" content={entry.data.description} />}
+<meta property="og:site_name" content="Logtrail Docs" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonical} />
+<meta property="og:title" content={`${entry?.data?.title || 'Logtrail'} | Logtrail Docs`} />
+{entry?.data?.description && <meta property="og:description" content={entry.data.description} />}
+
+<meta name="twitter:title" content={`${entry?.data?.title || 'Logtrail'} | Logtrail Docs`} />
+{entry?.data?.description && <meta name="twitter:description" content={entry.data.description} />}
+
+<!-- Structured Data -->
+<script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify(appSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify(searchSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": breadcrumbItems
+})} />

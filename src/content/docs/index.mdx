@@ -3,7 +3,7 @@ title: logtrail
 description: The logging platform built for AI-era apps. One integration gives you internal debugging logs and a user-facing activity trail.
 template: splash
 hero:
-  tagline: The logging platform built for AI-era apps. One integration gives you internal debugging logs and a user-facing activity trail.
+  tagline: "The logging platform built for AI-era apps. One integration gives you internal debugging logs and a user-facing activity trail. <br/><a href='https://app.logtrail.net' class='hero-public-beta-badge'><span class='badge-dot'></span>Public Beta - Reserve your workspace now</a>"
   image:
     file: ../../assets/houston.webp
   actions:
@@ -14,8 +14,12 @@ hero:
       link: /getting-started/introduction/
       icon: rocket
       variant: secondary
+    - text: API Reference
+      link: /api-reference/
+      icon: open-book
+      variant: secondary
     - text: "TLDR: Ask GPT"
-      link: "https://chatgpt.com/?q=I%27m%20building%20with%20Logtrail.%20Use%20https%3A%2F%2Fdocs.logtrail.net%2Fllms.txt%20and%20https%3A%2F%2Fdocs.logtrail.net%2FAGENTS.md%20to%20help%20me%20integrate%20logging%20and%20user%20activity%20feeds.%20Let%27s%20ship%20it%20faster%20than%20a%2014yo%20on%20X.%20No%20cap."
+      link: "https://chatgpt.com/?q=I%27m%20building%20with%20Logtrail.%20Use%20https%3A%2F%2Fdocs.logtrail.net%2Fllms.txt%2C%20https%3A%2F%2Fdocs.logtrail.net%2FAGENTS.md%20and%20https%3A%2F%2Fdocs.logtrail.net%2Fopenapi.yaml%20to%20help%20me%20integrate%20logging%20and%20user%20activity%20feeds.%20Let%27s%20ship%20it%20faster%20than%20a%2014yo%20on%20X.%20No%20cap."
       icon: external
       variant: minimal
 ---
@@ -47,6 +51,19 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
 Don't be the developer still writing raw SQL for logs or building custom activity feeds from scratch. Join the **Logtrail era**.
 
+<div style="background: var(--sl-color-gray-6); padding: 2rem; border-radius: 1rem; margin: 2rem 0; text-align: center; border: 1px solid var(--sl-color-gray-5);">
+  <h3 style="margin-top: 0;">Search Documentation</h3>
+  <form action="/search" method="get" style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem;">
+    <input 
+      type="search" 
+      name="q" 
+      placeholder="Search Logtrail Docs (e.g. 'LCQL', 'SDK')" 
+      style="padding: 0.6rem 1rem; border-radius: 0.5rem; border: 1px solid var(--sl-color-gray-4); background: var(--sl-color-black); color: white; width: 100%; max-width: 400px;"
+    />
+    <button type="submit" style="padding: 0.6rem 1.2rem; border-radius: 0.5rem; border: none; background: var(--logtrail-accent); color: var(--sl-color-bg); cursor: pointer; font-weight: bold;">Search</button>
+  </form>
+</div>
+
 <CardGrid>
 	<Card title="Instant Professionalism" icon="star">
 		Add a **User Activity Feed** that looks like Stripe's or Vercel's in 3 minutes. Your users will think you have a 10-person engineering team.
@@ -70,6 +87,7 @@ Don't be the developer still writing raw SQL for logs or building custom activit
     <p style="margin-bottom: 20px;">We're currently in public beta. Reserve your workspace name before it's taken.</p>
     [Claim Your Workspace Name](https://app.logtrail.net) | [Star on GitHub](https://github.com/logtrailnet/docs)
   </div>
+  <p style="font-size: 0.9rem; color: var(--sl-color-gray-3);">Need help? Reach out at [support@logtrail.net](mailto:support@logtrail.net)</p>
 </center>
 
 <center>

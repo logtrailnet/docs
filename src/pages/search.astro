@@ -1,0 +1,53 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+---
+
+<StarlightPage frontmatter={{ title: 'Search Documentation', template: 'splash' }}>
+  <div class="search-container">
+    <p>Search the Logtrail documentation for guides, concepts, and API references.</p>
+    <div id="starlight__search"></div>
+  </div>
+</StarlightPage>
+
+<style>
+  .search-container {
+    max-width: 800px;
+    margin: 4rem auto;
+    text-align: center;
+  }
+  p {
+    margin-bottom: 2rem;
+    color: var(--sl-color-gray-2);
+  }
+</style>
+
+<script>
+  // Automatically open the search modal if a 'q' parameter is present
+  const urlParams = new URLSearchParams(window.location.search);
+  const query = urlParams.get('q');
+  
+  if (query) {
+    // Pagefind can take a moment to initialize and enable the button
+    const pollForSearch = setInterval(() => {
+      const searchButton = document.querySelector('button[data-open-modal]');
+      if (searchButton instanceof HTMLButtonElement && !searchButton.disabled) {
+        searchButton.click();
+        
+        // Try to inject the value into the input if it's already there
+        // Note: Pagefind's input might be created dynamically after the click
+        setTimeout(() => {
+          const searchInput = document.querySelector('#starlight__search input');
+          if (searchInput instanceof HTMLInputElement) {
+            searchInput.value = query;
+            searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        }, 100);
+        
+        clearInterval(pollForSearch);
+      }
+    }, 100);
+    
+    // Stop polling after 5 seconds to avoid infinite loop
+    setTimeout(() => clearInterval(pollForSearch), 5000);
+  }
+</script>
