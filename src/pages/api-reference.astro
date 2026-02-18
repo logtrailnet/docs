@@ -1,9 +1,46 @@
 ---
 import { ScalarComponent } from '@scalar/astro'
+
+const title = "API Reference | Logtrail Docs";
+const description = "Comprehensive API documentation for Logtrail, the high-performance logging platform built for modern engineering teams.";
+const canonical = "https://docs.logtrail.net/api-reference";
 ---
 
-<ScalarComponent
-  configuration={{
-    url: '/openapi.yaml',
-  }}
-/>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  
+  <!-- Social Media Tags -->
+  <meta property="og:site_name" content="Logtrail Docs" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content="https://docs.logtrail.net/og-image.png" />
+  
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content="https://docs.logtrail.net/og-image.png" />
+  
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <style is:global>
+    body {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <ScalarComponent
+    configuration={{
+      url: '/openapi.yaml',
+      isFullPage: false,
+    }}
+  />
+</body>
+</html>

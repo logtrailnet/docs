@@ -1,7 +1,9 @@
 ---
 import type { Props } from '@astrojs/starlight/props';
+import Default from '@astrojs/starlight/components/Head.astro';
 
-const { url, entry } = Astro;
+const { entry, slug } = Astro.props;
+const { url } = Astro;
 const base = 'https://docs.logtrail.net';
 const canonical = new URL(url.pathname, base).toString();
 
@@ -59,24 +61,38 @@ const searchSchema = {
     "query-input": "required name=search_term_string"
   }
 };
+
+// Fallback SEO values
+const siteTitle = 'Logtrail Docs';
+
+let displayTitle = '';
+if (entry?.data?.title && entry.data.title.toLowerCase() !== 'logtrail') {
+  displayTitle = entry.data.title;
+} else if (slug) {
+  displayTitle = slug.split('/').pop()?.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || '';
+} else if (url.pathname !== '/') {
+  displayTitle = url.pathname.split('/').filter(Boolean).pop()?.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || '';
+}
+
+const pageTitle = displayTitle ? `${displayTitle} | ${siteTitle}` : siteTitle;
+const description = entry?.data?.description || 'The high-performance, AI-friendly logging platform for modern engineering teams.';
 ---
 
-<!-- Character Encoding -->
-<meta charset="utf-8" />
+<Default {...Astro.props}><slot /></Default>
 
-<!-- Canonical -->
+<title>{pageTitle}</title>
 <link rel="canonical" href={canonical} />
+<meta name="description" content={description} />
 
-<!-- Meta Tags for SEO & Social Sharing -->
-{entry?.data?.description && <meta name="description" content={entry.data.description} />}
+<!-- Open Graph / Social -->
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
 <meta property="og:site_name" content="Logtrail Docs" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content={canonical} />
-<meta property="og:title" content={`${entry?.data?.title || 'Logtrail'} | Logtrail Docs`} />
-{entry?.data?.description && <meta property="og:description" content={entry.data.description} />}
 
-<meta name="twitter:title" content={`${entry?.data?.title || 'Logtrail'} | Logtrail Docs`} />
-{entry?.data?.description && <meta name="twitter:description" content={entry.data.description} />}
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={description} />
 
 <!-- Structured Data -->
 <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
@@ -87,3 +103,8 @@ const searchSchema = {
   "@type": "BreadcrumbList",
   "itemListElement": breadcrumbItems
 })} />
+
+<!-- Client-side title fix to ensure dynamic navigation updates work as expected -->
+<script is:inline define:vars={{ pageTitle }}>
+  document.title = pageTitle;
+</script>
