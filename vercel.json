@@ -1,0 +1,64 @@
+{
+  "redirects": [
+    {
+      "source": "/openapi",
+      "destination": "/openapi.yaml",
+      "permanent": true
+    },
+    {
+      "source": "/llm",
+      "destination": "/llms.txt",
+      "permanent": true
+    },
+    {
+      "source": "/llms",
+      "destination": "/llms.txt",
+      "permanent": true
+    },
+    {
+      "source": "/agent",
+      "destination": "/AGENTS.md",
+      "permanent": true
+    },
+    {
+      "source": "/agents",
+      "destination": "/AGENTS.md",
+      "permanent": true
+    },
+    {
+      "source": "/claude",
+      "destination": "/claude.md",
+      "permanent": true
+    },
+    {
+      "source": "/favicon.ico",
+      "destination": "/favicon.svg",
+      "permanent": true
+    },
+    {
+      "source": "/github",
+      "destination": "https://github.com/logtrailnet",
+      "permanent": true
+    },
+    {
+      "source": "/app",
+      "destination": "https://app.logtrail.net",
+      "permanent": true
+    },
+    {
+      "source": "/api",
+      "destination": "/api-reference",
+      "permanent": true
+    },
+    {
+      "source": "/terms",
+      "destination": "/legal/terms",
+      "permanent": true
+    },
+    {
+      "source": "/privacy",
+      "destination": "/legal/privacy",
+      "permanent": true
+    }
+  ]
+}

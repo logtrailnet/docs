@@ -114,15 +114,22 @@ export default defineConfig({
 			],
 		}),
 		sitemap({
+			customPages: [
+				'https://docs.logtrail.net/openapi',
+				'https://docs.logtrail.net/llm',
+				'https://docs.logtrail.net/agent',
+				'https://docs.logtrail.net/claude',
+			],
 			filter: (page) => {
-				// Exclude non-HTML documentation files
-				return !(
-					page.includes('.md') ||
-					page.includes('.yaml') ||
-					page.includes('.txt') ||
-					page.includes('openapi') ||
-					page.includes('llms')
-				);
+				// Exclude raw files with extensions
+				const isRawFile =
+					page.endsWith('.md') ||
+					page.endsWith('.yaml') ||
+					page.endsWith('.txt') ||
+					page.endsWith('.json') ||
+					page.endsWith('.xml');
+
+				return !isRawFile;
 			},
 		}),
 		robots({
